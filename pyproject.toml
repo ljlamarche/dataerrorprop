@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dataerrorprop"
+version = "0.0.1"
+authors = [
+  { name="L. Lamarche", email="leslie.lamarche@sri.com" },
+]
+description = "Common data analysis functions that are sensitive to error."
+readme = "README.md"
+license = { file = "LICENSE" }
+keywords = ["error", "error propigation", "data analysis"]
+requires-python = ">=3.7"
+dependencies = [
+    "numpy",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: Python",
+    "Operating System :: OS Independent",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+#[project.urls]
+#"Homepage" = "https://github.com/ljlamarche/magcoordmap"
+#"Bug Tracker" = "https://github.com/ljlamarche/magcoordmap/issues"
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "src"
+]
+#addopts = [
+#    "--import-mode=importlib",
+#]
