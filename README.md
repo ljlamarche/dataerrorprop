@@ -1,0 +1,1 @@
+This package offers new versions of common data analysis and statistics functions that account for errors/uncertainty in the data.  It accouts for error propigation and error weighting (with error propigation).
