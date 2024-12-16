@@ -12,4 +12,4 @@ $$ f(x_1, x_2, ... x_N) $$
 
 the standard error is given by
 
-$$ \sigma_f = \sqrt{\sum_i^N \left(\frac{\partial f}{\patrial x_i}\right)^2 \sigma_i^2} $$
+$$ \sigma_f = \sqrt{\sum_i^N \left(\frac{\partial f}{\partial x_i}\right)^2 \sigma_i^2} $$
