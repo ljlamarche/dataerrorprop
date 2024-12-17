@@ -35,6 +35,6 @@ $$ \sigma = \sqrt{\sum_i^N \left(\frac{\partial \mu}{\partial x_i}\right)^2 \sig
 
 $$ \sigma = \sqrt{\sum_i^N \left(\frac{\sigma_i^{-2}}{\sum_i^N \sigma_i^{-2}}\right)^2 \sigma_i^2} $$
 
-$$ \sigma = \sqrt{\sum_i^N \frac{\sigma_i^{-4}}{\left(\sum_i^N \sigma_i^{-2}\right)^2}\sigma_i^2} = \sqrt{\sum_i^N \frac{\sigma_i^{-2}}}{\left(\sum_i^N \sigma_i^{-2}\right)^2} $$
+$$ \sigma = \sqrt{\sum_i^N \frac{\sigma_i^{-4}}{\left(\sum_i^N \sigma_i^{-2}\right)^2}\sigma_i^2} = \sqrt{\sum_i^N \frac{\sigma_i^{-2}}{\left(\sum_i^N \sigma_i^{-2}\right)^2}} $$
 
 $$ \sigma = \sqrt{\frac{1}{\left(\sum_i^N \sigma_i^{-2}\right)^2} \left(\sum_i^N \sigma_i^{-2}\right)} = \sqrt{\frac{1}{\sum_i^N \sigma_i^{-2}}} $$
