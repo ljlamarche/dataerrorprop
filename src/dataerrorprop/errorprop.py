@@ -19,7 +19,7 @@ def mean(x, dx, axis=None):
     return mu, dmu
 
 
-def stddev(x, dx):
+def stddev(x, dx, axis=None):
     '''
     Calculate the standard deviation and the error on the standard deviation.
     '''
@@ -28,6 +28,6 @@ def stddev(x, dx):
     mu, dmu = mean(x, dx)
 
     sig = np.sqrt(np.nansum((x-mu)**2)/(N-1))
-    dsig = np.sqrt((np.nansum((x-mu)**2*dx*2) + np.nansum(x-mu)**2*dmu**2)/((N-1)*np.nansum((x-mu)**2))
+    dsig = np.sqrt((np.nansum((x-mu)**2*dx*2) + np.nansum(x-mu)**2*dmu**2)/((N-1)*np.nansum((x-mu)**2)))
 
     return sig, dsig
