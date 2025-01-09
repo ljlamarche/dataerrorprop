@@ -14,7 +14,9 @@ where individual parameters $x_i$ each have error $\delta x_i$ the standard erro
 
 $$ \delta f = \sqrt{\sum_i^N \left(\frac{\partial f}{\partial x_i}\right)^2 \delta x_i^2} $$
 
-## Mean
+## Standard
+
+### Mean
 
 $$ \mu = \frac{\sum_i^N x_i}{N} $$
 
@@ -24,7 +26,7 @@ $$ \delta\mu = \sqrt{\sum_i^N \left(\frac{\partial \mu}{\partial x_i}\right)^2 \
 
 $$ \delta\mu = \sqrt{\sum_i^N \left(\frac{1}{N}\right)^2 \delta x_i^2} = \frac{\sqrt{\sum_i^N \delta x_i^2}}{N} $$
 
-## Standard Deviation
+### Standard Deviation
 
 $$ \sigma = \sqrt{\frac{\sum_i^N(x_i-\mu)^2}{N-1}} = \frac{1}{\sqrt{N-1}}\left[\sum_i^N(x_i-\mu)^2\right]^{1/2} $$
 
@@ -38,38 +40,7 @@ $$ \delta\sigma = \sqrt{\sum_i^N\left(\frac{x_i-\mu}{\sqrt{(N-1)\sum_i^N(x_i-\mu
 
 $$ \delta\sigma = \sqrt{\frac{\sum_i^N (x_i-\mu)^2\delta x_i^2 + \left[\sum_i^N(x_i-\mu)\right]^2\delta\mu^2}{(N-1)\sum_i^N(x_i-\mu)^2}} $$
 
-## Weighted Mean
-Each value has an independent weight $w_i$ so some values contribute more to the resulting mean than others.
-
-$$ \mu = \frac{\sum_i^N w_i x_i}{\sum_i^N w_i} $$
-
-$$ \frac{\partial \mu}{\partial x_i} = \frac{w_i}{\sum_i^N w_i} $$
-
-$$ \delta\mu = \sqrt{\sum_i^N \left(\frac{\partial \mu}{\partial x_i}\right)^2 \delta x_i^2} $$
-
-$$ \delta\mu = \sqrt{\sum_i^N \left(\frac{w_i}{\sum_i^N w_i}\right)^2 \delta x_i^2} = \frac{\sqrt{\sum_i^N w_i^2 \delta x_i^2}}{\sum_i^N w_i} $$
-
-For weights equal to the inverse error squared ($w_i = \delta x_i^{-2}$)
-
-$$ \delta\mu = \frac{\sqrt{\sum_i^N (\delta x_i^{-2})^2 \delta x_i^2}}{\sum_i^N (\delta x_i^{-2})} = \frac{\sqrt{\sum_i^N \delta x_i^{-2}}}{\sum_i^N \delta x_i^{-2}} = \frac{1}{\sqrt{\sum_i^N \delta x_i^{-2}}} $$
-
-## Weighted Standard Deviation
-
-M is the number of non-zero weights.
-
-$$ \sigma = \sqrt{\frac{\sum_i^N w_i(x_i-\mu)^2}{\frac{M-1}{M}\sum_i^N w_i}} = \frac{1}{\sqrt{\frac{M-1}{M}\sum_i^N w_i}}\left[\sum_i^N w_i(x_i-\mu)^2\right]^{1/2} $$
-
-$$ \frac{\partial \sigma}{\partial x_i} = \frac{1}{\sqrt{\frac{M-1}{M}\sum_i^N w_i}}\frac{1}{2}\left[\sum_i^N w_i(x_i-\mu)^2\right]^{-1/2}\left[2w_i(x_i-\mu)\right] = \frac{w_i(x_i-\mu)}{\sqrt{\left(\frac{M-1}{M}\sum_i^N w_i\right)\sum_i^N w_i(x_i-\mu)^2}} $$
-
-$$ \frac{\partial \sigma}{\partial\mu} = \frac{1}{\sqrt{\frac{M-1}{M}\sum_i^N w_i}}\frac{1}{2}\left[\sum_i^N w_i(x_i-\mu)^2\right]^{-1/2}\left[-2\sum_i^N w_i(x_i-\mu)\right] = -\frac{\sum_i^N w_i(x_i-\mu)}{\sqrt{\left(\frac{M-1}{M}\sum_i^N w_i\right)\sum_i^N w_i(x_i-\mu)^2}} $$
-
-$$ \delta\sigma = \sqrt{\sum_i^N\left(\frac{\partial \sigma}{\partial x_i}\right)^2\delta x_i^2 + \left(\frac{\partial \sigma}{\partial \mu}\right)^2\delta \mu^2} $$
-
-$$ \delta\sigma = \sqrt{\sum_i^N\left(\frac{w_i(x_i-\mu)}{\sqrt{\left(\frac{M-1}{M}\sum_i^N w_i\right)\sum_i^N w_i(x_i-\mu)^2}}\right)^2\delta x_i^2 + \left(-\frac{\sum_i^N w_i(x_i-\mu)}{\sqrt{\left(\frac{M-1}{M}\sum_i^N w_i\right)\sum_i^N w_i(x_i-\mu)^2}}\right)^2\delta \mu^2} $$
-
-$$ \delta\sigma = \sqrt{\frac{\sum_i^N w_i^2(x_i-\mu)^2\delta x_i^2 + \left[\sum_i^N w_i(x_i-\mu)\right]^2\delta\mu^2}{\left(\frac{M-1}{M}\sum_i^N w_i\right)\sum_i^N w_i(x_i-\mu)^2}}$$
-
-## Histogram
+### Histogram
 
 To account for errors on individual points when generating a histogram, treat each point as a normalized Gaussaian with a mean of its value and a standard devation of its error.  Then calculate the are under the Gaussian between the edges of each histogram bin.  The sum of contributions from each individual point calculated in this way will be the total value of the histogram bin.
 
@@ -100,3 +71,38 @@ $$ A = \frac{1}{2}\left[\frac{2}{\sqrt{\pi}} \int_0^{u_1} e^{-u^2} du - \frac{2}
 $$ A = \frac{\textrm{erf}(u_1) - \textrm{erf}(u_0)}{2} $$
 
 The digram shows the total histogram from two points in grey, plus the contributions from the blue and red points individually in their respective colors.  Note that the blue point has a relatively small error and narrow Gaussian width, so its contributions fall almost entirely in one bin and the blue contribution to that bin is close to one.  In contrast, the red point has a larger error and provides significant contributions to several bins.  The total area under each individual Gaussian is 1, so it is still possible to normalize the total histogram by dividing by the total number of points that contributed to it. 
+
+
+## Weighted
+
+### Mean
+Each value has an independent weight $w_i$ so some values contribute more to the resulting mean than others.
+
+$$ \mu = \frac{\sum_i^N w_i x_i}{\sum_i^N w_i} $$
+
+$$ \frac{\partial \mu}{\partial x_i} = \frac{w_i}{\sum_i^N w_i} $$
+
+$$ \delta\mu = \sqrt{\sum_i^N \left(\frac{\partial \mu}{\partial x_i}\right)^2 \delta x_i^2} $$
+
+$$ \delta\mu = \sqrt{\sum_i^N \left(\frac{w_i}{\sum_i^N w_i}\right)^2 \delta x_i^2} = \frac{\sqrt{\sum_i^N w_i^2 \delta x_i^2}}{\sum_i^N w_i} $$
+
+For weights equal to the inverse error squared ($w_i = \delta x_i^{-2}$)
+
+$$ \delta\mu = \frac{\sqrt{\sum_i^N (\delta x_i^{-2})^2 \delta x_i^2}}{\sum_i^N (\delta x_i^{-2})} = \frac{\sqrt{\sum_i^N \delta x_i^{-2}}}{\sum_i^N \delta x_i^{-2}} = \frac{1}{\sqrt{\sum_i^N \delta x_i^{-2}}} $$
+
+### Standard Deviation
+
+M is the number of non-zero weights.
+
+$$ \sigma = \sqrt{\frac{\sum_i^N w_i(x_i-\mu)^2}{\frac{M-1}{M}\sum_i^N w_i}} = \frac{1}{\sqrt{\frac{M-1}{M}\sum_i^N w_i}}\left[\sum_i^N w_i(x_i-\mu)^2\right]^{1/2} $$
+
+$$ \frac{\partial \sigma}{\partial x_i} = \frac{1}{\sqrt{\frac{M-1}{M}\sum_i^N w_i}}\frac{1}{2}\left[\sum_i^N w_i(x_i-\mu)^2\right]^{-1/2}\left[2w_i(x_i-\mu)\right] = \frac{w_i(x_i-\mu)}{\sqrt{\left(\frac{M-1}{M}\sum_i^N w_i\right)\sum_i^N w_i(x_i-\mu)^2}} $$
+
+$$ \frac{\partial \sigma}{\partial\mu} = \frac{1}{\sqrt{\frac{M-1}{M}\sum_i^N w_i}}\frac{1}{2}\left[\sum_i^N w_i(x_i-\mu)^2\right]^{-1/2}\left[-2\sum_i^N w_i(x_i-\mu)\right] = -\frac{\sum_i^N w_i(x_i-\mu)}{\sqrt{\left(\frac{M-1}{M}\sum_i^N w_i\right)\sum_i^N w_i(x_i-\mu)^2}} $$
+
+$$ \delta\sigma = \sqrt{\sum_i^N\left(\frac{\partial \sigma}{\partial x_i}\right)^2\delta x_i^2 + \left(\frac{\partial \sigma}{\partial \mu}\right)^2\delta \mu^2} $$
+
+$$ \delta\sigma = \sqrt{\sum_i^N\left(\frac{w_i(x_i-\mu)}{\sqrt{\left(\frac{M-1}{M}\sum_i^N w_i\right)\sum_i^N w_i(x_i-\mu)^2}}\right)^2\delta x_i^2 + \left(-\frac{\sum_i^N w_i(x_i-\mu)}{\sqrt{\left(\frac{M-1}{M}\sum_i^N w_i\right)\sum_i^N w_i(x_i-\mu)^2}}\right)^2\delta \mu^2} $$
+
+$$ \delta\sigma = \sqrt{\frac{\sum_i^N w_i^2(x_i-\mu)^2\delta x_i^2 + \left[\sum_i^N w_i(x_i-\mu)\right]^2\delta\mu^2}{\left(\frac{M-1}{M}\sum_i^N w_i\right)\sum_i^N w_i(x_i-\mu)^2}}$$
+

@@ -1,6 +1,6 @@
-# errorweight.py
-# Error-weighted versions of common data analysis functions
-# Error propigation is also applied
+# weighted.py
+# Weighted versions of common data analysis functions that account for error propogation.
+# If no explicit weights are provided, the inverse of the error squared is used by default.
 # Functions take in both values and an equal sized array of their errors.
 # All parameters are assumed to be Gaussian random variables.
 
@@ -18,7 +18,7 @@ def mean(x, dx, w=None, axis=None):
 
     return mu, dmu
 
-def stddev(x, dx, w=None, axis=None):
+def std(x, dx, w=None, axis=None):
 
     # Use inverse of the errors squared for weights if not explictly provide
     if w is None:

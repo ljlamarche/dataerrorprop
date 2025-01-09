@@ -1,4 +1,4 @@
-# error_prop.py
+# standard.py
 # Common data analysis functions with error propigation.
 # Functions take in both values and an equal sized array of their errors.
 # All parameters are assumed to be Gaussian random variables.
@@ -19,7 +19,7 @@ def mean(x, dx, axis=None):
     return mu, dmu
 
 
-def stddev(x, dx, axis=None):
+def std(x, dx, axis=None):
     '''
     Calculate the standard deviation and the error on the standard deviation.
     '''
