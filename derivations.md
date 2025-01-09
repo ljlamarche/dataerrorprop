@@ -68,3 +68,35 @@ $$ \delta\sigma = \sqrt{\sum_i^N\left(\frac{\partial \sigma}{\partial x_i}\right
 $$ \delta\sigma = \sqrt{\sum_i^N\left(\frac{w_i(x_i-\mu)}{\sqrt{\left(\frac{M-1}{M}\sum_i^N w_i\right)\sum_i^N w_i(x_i-\mu)^2}}\right)^2\delta x_i^2 + \left(-\frac{\sum_i^N w_i(x_i-\mu)}{\sqrt{\left(\frac{M-1}{M}\sum_i^N w_i\right)\sum_i^N w_i(x_i-\mu)^2}}\right)^2\delta \mu^2} $$
 
 $$ \delta\sigma = \sqrt{\frac{\sum_i^N w_i^2(x_i-\mu)^2\delta x_i^2 + \left[\sum_i^N w_i(x_i-\mu)\right]^2\delta\mu^2}{\left(\frac{M-1}{M}\sum_i^N w_i\right)\sum_i^N w_i(x_i-\mu)^2}}$$
+
+## Histogram
+
+To account for errors on individual points when generating a histogram, treat each point as a normalized Gaussaian with a mean of its value and a standard devation of its error.  Then calculate the are under the Gaussian between the edges of each histogram bin.  The sum of contributions from each individual point calculated in this way will be the total value of the histogram bin.
+
+![image](histogram_diagram.png)
+
+$$ g(x) = \frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{(x-\mu)^2}{2\sigma^2}} $$
+
+$$ A = \int_{x_0}^{x_1} g(x) dx = \int_{x_0}^{x_1} \frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{(x-\mu)^2}{2\sigma^2}} $$
+
+Use substitution to solve the integral.
+
+$$ u = \frac{x-\mu}{\sqrt{2}\sigma} $$
+
+$$ du = \frac{1}{\sqrt{2}\sigma} $$
+
+$$ u_0 = \frac{x_0-\mu}{\sqrt{2}\sigma} $$
+
+$$ u_1 = \frac{x_1-\mu}{\sqrt{2}\sigma} $$
+
+$$ A = \frac{1}{\sqrt{\pi}} \int_{u_0}^{u_1} e^{-u^2} du $$
+
+This integral can be solved with error functions.
+
+$$ \textrm{erf}(z) = \frac{2}{\sqrt{\pi}} \int_0^z e^{-t^2} dt $$
+
+$$ A = \frac{1}{2}\left[\frac{2}{\sqrt{\pi}} \int_0^{u_1} e^{-u^2} du - \frac{2}{\sqrt{\pi}} \int_0^{u_0} e^{-u^2} du\right] $$
+
+$$ A = \frac{\textrm{erf}(u_1) - \textrm{erf}(u_0)}{2} $$
+
+The digram shows the total histogram from two points in grey, plus the contributions from the blue and red points individually in their respective colors.  Note that the blue point has a relatively small error and narrow Gaussian width, so its contributions fall almost entirely in one bin and the blue contribution to that bin is close to one.  In contrast, the red point has a larger error and provides significant contributions to several bins.  The total area under each individual Gaussian is 1, so it is still possible to normalize the total histogram by dividing by the total number of points that contributed to it. 
