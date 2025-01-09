@@ -32,6 +32,31 @@ def std(x, dx, w=None, axis=None):
 
     return sig, dsig
 
-def histogram(x, dx):
-    return
+
+def histogram(x, dx, w=None, bins=10, histrange=None):
+    '''
+    Bin data into a histogram accounting for error in the datapoints
+    '''
+    # Note - very basic, needs more work to match features of numpy.histogram
+    from scipy.special import erf
+
+    if w is None:
+        w = dx**(-2)
+
+    if not histrange:
+        histrange = (np.nanmin(x), np.nanmax(x))
+
+    bin_edges = np.linspace(histrange[0], histrange[1], bins+1)
+    
+    hist = np.zeros(bins)
+
+    for m, s wi in zip(x, dx, w):
+
+        edges_trans = (np.log(bin_edges) - m)/(s*np.sqrt(2))
+        edges_erf = erf(edges_trans)
+
+        hist += wi*np.diff(edges_erf)/2.
+
+    return hist, bin_edges
+
 

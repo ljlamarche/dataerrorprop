@@ -46,6 +46,8 @@ To account for errors on individual points when generating a histogram, treat ea
 
 ![image](histogram_diagram.png)
 
+Note that the blue point has a relatively small error and narrow Gaussian width, so its contributions fall almost entirely in one bin and the blue contribution to that bin is close to one.  In contrast, the red point has a larger error and provides significant contributions to several bins.  The actual contribution to each bin can be calculated by integrating the Gaussian over the range of the bin.
+
 $$ g(x) = \frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{(x-\mu)^2}{2\sigma^2}} $$
 
 $$ A = \int_{x_0}^{x_1} g(x) dx = \int_{x_0}^{x_1} \frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{(x-\mu)^2}{2\sigma^2}} $$
@@ -68,9 +70,17 @@ $$ \textrm{erf}(z) = \frac{2}{\sqrt{\pi}} \int_0^z e^{-t^2} dt $$
 
 $$ A = \frac{1}{2}\left[\frac{2}{\sqrt{\pi}} \int_0^{u_1} e^{-u^2} du - \frac{2}{\sqrt{\pi}} \int_0^{u_0} e^{-u^2} du\right] $$
 
-$$ A = \frac{\textrm{erf}(u_1) - \textrm{erf}(u_0)}{2} $$
+$$ A = \frac{1}{2}\left[\textrm{erf}(u_1) - \textrm{erf}(u_0)\right] = \frac{1}{2}\left[\textrm{erf}\left(\frac{x_1-\mu}{\sqrt{2}\sigma}\right) - \textrm{erf}\left(\frac{x_0-\mu}{\sqrt{2}\sigma}\right)\right] $$
 
-The digram shows the total histogram from two points in grey, plus the contributions from the blue and red points individually in their respective colors.  Note that the blue point has a relatively small error and narrow Gaussian width, so its contributions fall almost entirely in one bin and the blue contribution to that bin is close to one.  In contrast, the red point has a larger error and provides significant contributions to several bins.  The total area under each individual Gaussian is 1, so it is still possible to normalize the total histogram by dividing by the total number of points that contributed to it. 
+To get the total histogram value for a given bin $j$, sum the contributions of $A[j]$ for each point.
+
+$$ h[j] = \sum_i^N A[j]_{i} = \sum_i^N \frac{1}{2}\left[\textrm{erf}\left(\frac{x_{j+1}-\mu_i}{\sqrt{2}\sigma_i}\right) - \textrm{erf}\left(\frac{x_j-\mu_i}{\sqrt{2}\sigma_i}\right)\right]$$
+
+To calculate the normalized histogram, simplily divide the value in each bin but the total number of points.
+
+$$ h'[j] = \frac{h[j]}{N} = \frac{1}{2N} \sum_i^N \left[\textrm{erf}\left(\frac{x_{j+1}-\mu_i}{\sqrt{2}\sigma_i}\right) - \textrm{erf}\left(\frac{x_j-\mu_i}{\sqrt{2}\sigma_i}\right)\right] $$
+
+This works because the total area under a normalized Gaussian is 1, so the total area under N normalized Gaussians is N.
 
 
 ## Weighted
@@ -86,9 +96,6 @@ $$ \delta\mu = \sqrt{\sum_i^N \left(\frac{\partial \mu}{\partial x_i}\right)^2 \
 
 $$ \delta\mu = \sqrt{\sum_i^N \left(\frac{w_i}{\sum_i^N w_i}\right)^2 \delta x_i^2} = \frac{\sqrt{\sum_i^N w_i^2 \delta x_i^2}}{\sum_i^N w_i} $$
 
-For weights equal to the inverse error squared ($w_i = \delta x_i^{-2}$)
-
-$$ \delta\mu = \frac{\sqrt{\sum_i^N (\delta x_i^{-2})^2 \delta x_i^2}}{\sum_i^N (\delta x_i^{-2})} = \frac{\sqrt{\sum_i^N \delta x_i^{-2}}}{\sum_i^N \delta x_i^{-2}} = \frac{1}{\sqrt{\sum_i^N \delta x_i^{-2}}} $$
 
 ### Standard Deviation
 
@@ -106,3 +113,12 @@ $$ \delta\sigma = \sqrt{\sum_i^N\left(\frac{w_i(x_i-\mu)}{\sqrt{\left(\frac{M-1}
 
 $$ \delta\sigma = \sqrt{\frac{\sum_i^N w_i^2(x_i-\mu)^2\delta x_i^2 + \left[\sum_i^N w_i(x_i-\mu)\right]^2\delta\mu^2}{\left(\frac{M-1}{M}\sum_i^N w_i\right)\sum_i^N w_i(x_i-\mu)^2}}$$
 
+### Histogram
+
+The weighted histogram is formed roughly the same as the standard histogram, but when summing the contributions $A[j]_i$ to a given bin $j$, each contribution is multiplied by the weight assigned to that value.
+
+$$ h[j] = \sum_i^N w_i A[j]_{i} = \sum_i^N \frac{w_i}{2}\left[\textrm{erf}\left(\frac{x_{j+1}-\mu_i}{\sqrt{2}\sigma_i}\right) - \textrm{erf}\left(\frac{x_j-\mu_i}{\sqrt{2}\sigma_i}\right)\right] $$
+
+Then to calculate the normalized histogram, divide by the sum of the weights rather than the total number of points.
+
+$$ h'[j] = \frac{h[j]}{\sum_i^N w_i} = \frac{1}{2\sum_i^N w_i} \sum_i^N w_i\left[\textrm{erf}\left(\frac{x_{j+1}-\mu_i}{\sqrt{2}\sigma_i}\right) - \textrm{erf}\left(\frac{x_j-\mu_i}{\sqrt{2}\sigma_i}\right)\right] $$
