@@ -31,3 +31,29 @@ def stddev(x, dx, axis=None):
     dsig = np.sqrt((np.nansum((x-mu)**2*dx*2) + np.nansum(x-mu)**2*dmu**2)/((N-1)*np.nansum((x-mu)**2)))
 
     return sig, dsig
+
+
+def histogram(x, dx, bins=10, histrange=None):
+    '''
+    Bin data into a histogram accounting for error in the datapoints
+    '''
+    # Note - very basic, needs more work to match features of numpy.histogram
+    from scipy.special import erf
+
+    if not histrange:
+        histrange = (np.nanmin(x), np.nanmax(x))
+
+    bin_edges = np.linspace(histrange[0], histrange[1], bins+1)
+    
+    hist = np.zeros(bins)
+
+    for m, s in zip(x, dx):
+
+        edges_trans = (np.log(bin_edges) - m)/(s*np.sqrt(2))
+        edges_erf = erf(edges_trans)
+
+        hist += np.diff(edges_erf)/2.
+
+    return hist, bin_edges
+
+
