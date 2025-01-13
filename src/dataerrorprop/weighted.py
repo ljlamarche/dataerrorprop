@@ -16,7 +16,7 @@ def _filter_finite(x, dx, w):
     finite_values = (np.isfinite(x) & np.isfinite(dx))
     fx = x[finite_values]
     fdx = dx[finite_values]
-    fw = w[finitie_values]
+    fw = w[finite_values]
     N = np.sum(finite_values)
 
     return fx, fdx, fw, N
@@ -71,7 +71,7 @@ def histogram(x, dx, w=None, bins=10, histrange=None):
     
     hist = np.zeros(bins)
 
-    for m, s wi in zip(x, dx, w):
+    for m, s, wi in zip(x, dx, w):
 
         edges_trans = (bin_edges - m)/(s*np.sqrt(2))
         edges_erf = erf(edges_trans)
