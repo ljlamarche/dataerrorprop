@@ -9,14 +9,13 @@ import numpy as np
 
 def _filter_finite(x, dx):
     '''
-    Remove any data points where either the data and/or the error is non-finite
-    and return equal-sized arrays where all values are real.
+    Mask any data points where either the data and/or the error is non-finite.
     '''
 
     finite_values = (np.isfinite(x) & np.isfinite(dx))
-    fx = x[finite_values]
-    fdx = dx[finite_values]
     N = np.sum(finite_values)
+    fx = np.ma.masked_array(x, mask=~finite_values)
+    fdx = np.ma.masked_array(dx, mask=~finite_values)
 
     return fx, fdx, N
 
