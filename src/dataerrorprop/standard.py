@@ -43,7 +43,7 @@ def std(x, dx, axis=None):
 
     mu, dmu = mean(x, dx)
     sig = np.sqrt(np.sum((x-mu)**2/(N-1)))
-    dsig = np.sqrt((np.sum(x-mu)**2*dx*2 + np.sum(x-mu)**2*dmu**2)/((N-1)*np.sum((x-mu)**2)))
+    dsig = np.sqrt((np.sum((x-mu)**2*dx**2) + np.sum(x-mu)**2*dmu**2)/((N-1)*np.sum((x-mu)**2)))
 
     return sig, dsig
 
