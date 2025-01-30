@@ -7,18 +7,18 @@
 
 import numpy as np
 
-def _filter_finite(x, dx, w):
+def _filter_finite(x, dx, w, axis=None):
     '''
     Mask any data points where either the data and/or the error is non-finite.
     '''
 
     finite_values = (np.isfinite(x) & np.isfinite(dx))
-    N = np.sum(finite_values)
+    N = np.sum(finite_values, axis=axis)
     fx = np.ma.masked_array(x, mask=~finite_values)
     fdx = np.ma.masked_array(dx, mask=~finite_values)
     fw = np.ma.masked_array(w, mask=~finite_values)
 
-    return fx, fdx, N
+    return fx, fdx, fw, N
 
 
 def mean(x, dx, w=None, axis=None):
@@ -27,10 +27,10 @@ def mean(x, dx, w=None, axis=None):
     if w is None:
         w = dx**(-2)
 
-    x, dx, w, N = _filter_finite(x, dx, w)
+    x, dx, w, N = _filter_finite(x, dx, w, axis=axis)
 
-    mu = np.sum(w*x)/np.sum(w)
-    dmu = np.sqrt(np.sum(w**2*dx**2))/np.sum(w)
+    mu = np.sum(w*x, axis=axis)/np.sum(w, axis=axis)
+    dmu = np.sqrt(np.sum(w**2*dx**2, axis=axis))/np.sum(w, axis=axis)
 
     return mu, dmu
 
@@ -40,13 +40,13 @@ def std(x, dx, w=None, axis=None):
     if w is None:
         w = dx**(-2)
 
-    x, dx, w, N = _filter_finite(x, dx, w)
+    x, dx, w, N = _filter_finite(x, dx, w, axis=axis)
 
     mu, dmu = mean(x, dx, w=w, axis=axis)
 
-    M = np.sum(w>0.)
-    sig = np.sqrt(np.sum(w*(x-mu)**2)/((M-1)/M*np.sum(w)))
-    dsig = np.sqrt((np.sum(w**2*(x-mu)**2*dx**2) + np.sum(w*(x-mu))**2*dmu**2)/((M-1)/M*np.sum(w)*np.sum(w*(x-mu)**2)))
+    M = np.sum(w>0., axis=axis)
+    sig = np.sqrt(np.sum(w*(x-mu)**2, axis=axis)/((M-1)/M*np.sum(w, axis=axis)))
+    dsig = np.sqrt((np.sum(w**2*(x-mu)**2*dx**2, axis=axis) + np.sum(w*(x-mu), axis=axis)**2*dmu**2)/((M-1)/M*np.sum(w, axis=axis)*np.sum(w*(x-mu)**2, axis=axis)))
 
     return sig, dsig
 
