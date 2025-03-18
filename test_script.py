@@ -142,16 +142,27 @@ def test_std_numpy():
 
 # Check that calculated mean is within the standard error (https://en.wikipedia.org/wiki/Standard_error)
 def test_mean_standard_error():
-    # Fails relatively often, not sure why...
 
     rng = np.random.default_rng()
-    x = rng.normal(3., 5., 1000)
-    s = rng.normal(0, 0.5, 1000)
 
-    ep_mean, _ = ep.mean(x, s)
-    std_err = 5./np.sqrt(1000)
+    # Calculate standard error
+    std_err = 5./np.sqrt(100)
 
-    np.testing.assert_(np.abs(3.-ep_mean)<=std_err)
+    one_sigma = 0
+    N_redraw = 10000
+    for _ in range(N_redraw):
+        # Generate redraw arrays
+        x = rng.normal(3., 5., 100)
+        s = rng.normal(0, 0.5, 100)
+        # Calculate mean of redraw 
+        ep_mean, _ = ep.mean(x, s)
+        # Check if redraw mean within standard error of true mean
+        if np.abs(ep_mean-3.)<=std_err:
+            # Tally if redraw within one sigma
+            one_sigma += 1
+
+    # Check that the percentage of redraws within one sigma match the standard one sigma percentage (68.2%)
+    np.testing.assert_allclose(one_sigma/N_redraw, 0.682, rtol=0.05)
 
 
 ## Some Monte Carlo stuff to demonstrate propogated error is correct?
