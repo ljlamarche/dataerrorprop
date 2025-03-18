@@ -1,4 +1,4 @@
-import dataerrorprop.weighted as ep
+import dataerrorprop.standard as ep
 import numpy as np
 import pytest
 
@@ -32,7 +32,7 @@ dx_2d_nan = np.array([[-0.76, np.nan, -0.68,  0.58],
 #@pytest.mark.parametrize('x', [x_1d, x_1d_nan])
 #@pytest.mark.parametrize('dx', [dx_1d, dx_1d_nan])
 
-print(ep.mean(x_1d_nan, dx_1d_nan))
+#print(ep.mean(np.array([1.,2.]), np.array([0.5, 0.1]), w=np.array([1,5])))
 
 # Check functions returning correct numeric values for known test numbers
 @pytest.mark.parametrize('x,dx,expected', [(x_1d,dx_1d,(2.222, 0.236637)), (x_2d, dx_2d, (2.0925 , 0.27561))])
@@ -105,9 +105,133 @@ def test_std_axis(x, dx, axis):
 # Check that a multidimensional array returns a sliced array if axes are specified
 
 
+
+
+# The following tests are more statistical in nature and desined to check that the
+#   functions do what they are mathematically expected to do rather than that they 
+#   just are returning consistent results.  Many use randomly generated arrays and
+#   may occasionally fail.  If so, try rerunning the test.  If a test is consistently
+#   failing, the actual function may not be implimented correctly or the derivation
+#   may not be correct.
+
+
+# Check that standard mean/std are the same as that calculated with numpy functions regardless of provided errors
+def test_mean_numpy():
+
+    rng = np.random.default_rng()
+    x = rng.normal(3., 5., 100)
+    s = rng.normal(0, 0.5, 100)
+
+    ep_mean, _ = ep.mean(x, s)
+    np_mean = np.mean(x)
+
+    np.testing.assert_allclose(ep_mean, np_mean)
+
+
+def test_std_numpy():
+
+    rng = np.random.default_rng()
+    x = rng.normal(3., 5., 100)
+    s = rng.normal(0, 0.5, 100)
+
+    ep_std, _ = ep.std(x, s)
+    np_std = np.std(x, ddof=1)
+
+    np.testing.assert_allclose(ep_std, np_std)
+
+
+# Check that calculated mean is within the standard error (https://en.wikipedia.org/wiki/Standard_error)
+def test_mean_standard_error():
+    # Fails relatively often, not sure why...
+
+    rng = np.random.default_rng()
+    x = rng.normal(3., 5., 1000)
+    s = rng.normal(0, 0.5, 1000)
+
+    ep_mean, _ = ep.mean(x, s)
+    std_err = 5./np.sqrt(1000)
+
+    np.testing.assert_(np.abs(3.-ep_mean)<=std_err)
+
+
+## Some Monte Carlo stuff to demonstrate propogated error is correct?
+def test_mean_error_onesig():
+
+    rng = np.random.default_rng()
+    x = rng.normal(3., 5., 100)
+    s = np.abs(rng.normal(0, 0.5, 100))
+
+    # Calculate mean and error on mean
+    ep_mean, ep_err = ep.mean(x, s)
+
+    one_sigma = 0
+    N_redraw = 10000
+    for _ in range(N_redraw):
+        # Generate redraw array
+        x_redraw = [rng.normal(x1, s1, 1) for x1, s1 in zip(x, s)]
+        # Check if redraw mean within calculated error on mean
+        if np.abs(ep_mean-np.mean(x_redraw))<=ep_err:
+            # Tally if redraw mean within one sigma 
+            one_sigma += 1
+
+    # Check that the percentage of redraws within one sigma match the standard one sigma percentage (68.2%)
+    np.testing.assert_allclose(one_sigma/N_redraw, 0.682, rtol=0.05)
+
+
+#def test_std_error_onesig():
+#    # This routinely fails
+#    # Standard Deviation is a positive definite value, so the standard one sigma values don't apply?
+#    # Test needs some kind of revisions
+#
+#    rng = np.random.default_rng()
+#    x = rng.normal(3., 5., 100)
+#    s = np.abs(rng.normal(0, 0.5, 100))
+#
+#    # Calculate mean and error on mean
+#    ep_std, ep_err = ep.std(x, s)
+#
+#    one_sigma = 0
+#    N_redraw = 10000
+#    for _ in range(N_redraw):
+#        # Generate redraw array
+#        x_redraw = [rng.normal(x1, s1, 1) for x1, s1 in zip(x, s)]
+#        # Check if redraw mean within calculated error on mean
+#        if np.abs(ep_std-np.std(x_redraw, ddof=1))<=ep_err:
+#            # Tally if redraw mean within one sigma 
+#            one_sigma += 1
+#
+#    # Check that the percentage of redraws within one sigma match the standard one sigma percentage (68.2%)
+#    np.testing.assert_allclose(one_sigma/N_redraw, 0.682, rtol=0.05)
+
+
+#1. Get random array of values and errors
+#2. Calculate mean and error for array
+#3. For each element in the array, redraw from a distrubution where the value is the mean and the error is the standard deviation.
+#4. Calculate the mean of the redrawn distribution.
+#5. Repete steps 3-4 a large number of times.
+#6. Check to see that the means of the redraw distribution are within the error estimate of the primary distribution
+
+
 #rng = np.random.default_rng()
-#x = rng.normal(3, 5., (4,4))
-#s = rng.normal(0, 1., (4,4))
+#x = rng.normal(3, 5., 10000)
+#s = rng.normal(0, 0.1, 10000)
+#
+##for mu in [1., 2.]:
+#
+#
+#print(np.mean(x), np.std(x))
+#print(ep.mean(x, s), ep.std(x, s))
+#
+#def gaussian(x, mu, sig):
+#    return np.exp(-(x-mu)**2/(2*sig**2))/(np.sqrt(np.pi)*sig)
+#
+#import matplotlib.pyplot as plt
+#plt.hist(x, bins=50, density=True)
+#xg = np.arange(-10., 25., 0.1)
+#plt.plot(xg, gaussian(xg, 3., 5.))
+#plt.show()
+
+
 #print(x, s)
 ## s = np.abs(x-10)
 #
