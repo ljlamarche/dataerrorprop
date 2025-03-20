@@ -140,24 +140,60 @@ def test_std_numpy():
     np.testing.assert_allclose(ep_std, np_std)
 
 
+# Following two tests are mathematically satesfying to confirm, but probably not strictly
+#   necessary checks of the code, especially if the prior two checks against numpy pass
+
 # Check that calculated mean is within the standard error (https://en.wikipedia.org/wiki/Standard_error)
 def test_mean_standard_error():
 
     rng = np.random.default_rng()
 
+    N = 100
+    mu = 3.
+    sig = 5.
+
     # Calculate standard error
-    std_err = 5./np.sqrt(100)
+    std_err = sig/np.sqrt(N)
 
     one_sigma = 0
     N_redraw = 10000
     for _ in range(N_redraw):
         # Generate redraw arrays
-        x = rng.normal(3., 5., 100)
-        s = rng.normal(0, 0.5, 100)
+        x = rng.normal(mu, sig, N)
+        s = rng.normal(0, 0.5, N)
         # Calculate mean of redraw 
         ep_mean, _ = ep.mean(x, s)
         # Check if redraw mean within standard error of true mean
-        if np.abs(ep_mean-3.)<=std_err:
+        if np.abs(ep_mean-mu)<=std_err:
+            # Tally if redraw within one sigma
+            one_sigma += 1
+
+    # Check that the percentage of redraws within one sigma match the standard one sigma percentage (68.2%)
+    np.testing.assert_allclose(one_sigma/N_redraw, 0.682, rtol=0.05)
+
+
+# Check that calculated standard deviation is within the standard error (https://web.eecs.umich.edu/~fessler/papers/files/tr/stderr.pdf)
+def test_std_standard_error():
+
+    rng = np.random.default_rng()
+
+    N = 100
+    mu = 3.
+    sig = 5.
+
+    # Calculate standard error
+    std_err = sig/np.sqrt(2*(N-1))
+
+    one_sigma = 0
+    N_redraw = 10000
+    for _ in range(N_redraw):
+        # Generate redraw arrays
+        x = rng.normal(mu, sig, N)
+        s = rng.normal(0, 0.5, N)
+        # Calculate standard deviation of redraw 
+        ep_std, _ = ep.std(x, s)
+        # Check if redraw standard deviation within standard error of true standard deviation
+        if np.abs(ep_std-sig)<=std_err:
             # Tally if redraw within one sigma
             one_sigma += 1
 
